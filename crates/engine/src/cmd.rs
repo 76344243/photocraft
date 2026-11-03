@@ -68,6 +68,9 @@ pub mod color_to_alpha_cmds;
 pub mod comps_cmds;
 pub mod contour_lib_cmds;
 pub mod cutout_cmds;
+// Fork patch (76344243/photocraft): the AI menu.
+#[cfg(not(target_arch = "wasm32"))]
+pub mod ki_cmds;
 pub mod distort_cmds;
 pub mod document_preset_cmds;
 pub mod edit_cmds;
@@ -1306,6 +1309,8 @@ fn build() -> Vec<CommandSpec> {
     v.extend(crate::path_edit_cmds::specs());
     v.extend(crate::smartselect_cmds::specs());
     v.extend(crate::cutout_cmds::specs());
+    #[cfg(not(target_arch = "wasm32"))]
+    v.extend(crate::ki_cmds::specs());
     v.extend(crate::symmetry_cmds::specs());
     v.extend(crate::edit_cmds::specs());
     v.extend(crate::smart_svg_cmds::specs());

@@ -456,6 +456,17 @@ pub(crate) fn invoke_unguarded(app: &mut PhotocraftApp, ctx: &egui::Context, id:
             };
             app.run("edit.paste", p)
         }
+        // Fork patch (76344243/photocraft): AI › Generative Fill… and AI Settings… from the menu
+        // open their dialogs (with params: the engine directly).
+        #[cfg(not(target_arch = "wasm32"))]
+        photocraft_engine::ki_cmds::FILL if params.as_object().is_none_or(|o| o.is_empty()) => {
+            if let Some(Err(why)) = photocraft_engine::commands::find(id).map(|c| (c.enabled)(&app.session)) {
+                return Err(why);
+            }
+            Ok(json!({"dialog": crate::ki_ui::open_fill(app)?}))
+        }
+        #[cfg(not(target_arch = "wasm32"))]
+        photocraft_engine::ki_cmds::SETTINGS if params.as_object().is_none_or(|o| o.is_empty()) => Ok(json!({"dialog": crate::ki_ui::open_settings(app)?})),
         // Layer › New › Layer… (⇧⌘N) asks first, as in Photoshop; with params it runs as is.
         crate::new_layer_ui::COMMAND if params.as_object().is_none_or(|o| o.is_empty()) => Ok(json!({"dialog": crate::new_layer_ui::open(app)?})),
         // Layer › Layer Style › <effect>… opens the Layer Style dialog on that effect.

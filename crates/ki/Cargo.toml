@@ -1,0 +1,27 @@
+# Fork (76344243/photocraft): PhotoCraft's AI features.
+[package]
+name = "photocraft-ki"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "AI features: local models (subject matte, object removal, upscaling) on ONNX Runtime, and generative fill through an online image service"
+
+[lints]
+workspace = true
+
+[dependencies]
+serde_json = { workspace = true }
+rayon = { workspace = true }
+image = { workspace = true, features = ["png", "jpeg", "webp"] }
+sha2 = "0.10"
+base64 = "0.22"
+# The same TLS set-up as craft-update (rustls with the OS's certificate verifier).
+ureq = { version = "3.4", default-features = false, features = ["rustls-no-provider", "_ring", "gzip", "platform-verifier"] }
+
+# ONNX Runtime, linked statically from pyke's prebuilt binaries (MIT OR Apache-2.0); on Apple
+# Silicon with CoreML, so the models run on the GPU and Neural Engine.
+[target.'cfg(target_os = "macos")'.dependencies]
+ort = { version = "=2.0.0-rc.15", default-features = false, features = ["std", "download-binaries", "tls-rustls", "copy-dylibs", "api-24", "coreml"] }
+
+[target.'cfg(not(target_os = "macos"))'.dependencies]
+ort = { version = "=2.0.0-rc.15", default-features = false, features = ["std", "download-binaries", "tls-rustls", "copy-dylibs", "api-24"] }

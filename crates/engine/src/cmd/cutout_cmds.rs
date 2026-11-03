@@ -48,6 +48,11 @@ fn subject_area(l: &Layer, canvas: Rect, sample_all: bool) -> Rect {
 }
 
 fn run(s: &mut Session, p: &Value) -> Result<Value> {
+    // Fork patch (76344243/photocraft): the local AI model once it is downloaded.
+    #[cfg(not(target_arch = "wasm32"))]
+    if crate::ki_cmds::subject_ai_ready(p) {
+        return crate::ki_cmds::remove_background(s, p);
+    }
     let id = layer_param(s, p)?;
     let doc = &s.active().ok_or(EngineError::NoDocument)?.doc;
     let layer = doc.layer(id).ok_or(EngineError::NoLayer(id))?;

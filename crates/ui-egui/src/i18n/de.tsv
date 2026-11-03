@@ -3551,3 +3551,32 @@ smartSvg	AI/PDF/EPS contents will be edited as SVG. Saving replaces the embedded
 	Solid Color	Volltonfarbe
 	Tint Color	Tönungsfarbe
 	Edit Brush…	Pinsel bearbeiten…
+
+# Fork (76344243/photocraft): the AI menu and its dialogs
+	AI	KI
+	Generative Fill…	Generatives Füllen…
+	Generative Fill	Generatives Füllen
+	Remove Selected Object	Ausgewähltes Objekt entfernen
+	Upscale 2×	Hochskalieren 2×
+	Upscale 4×	Hochskalieren 4×
+	AI Settings…	KI-Einstellungen…
+	AI Settings	KI-Einstellungen
+	Model:	Modell:
+	Describe what should appear in the selected area. Leave it empty to fill the area to match its surroundings.	Beschreibe, was im ausgewählten Bereich entstehen soll. Leer lassen, um ihn passend zur Umgebung zu füllen.
+	Nothing is selected, so the whole picture is changed. Describe the change.	Nichts ist ausgewählt – das ganze Bild wird verändert. Beschreibe die Änderung.
+	e.g. a small wooden boat on the water	z. B. ein kleines Holzboot auf dem Wasser
+	The area around the selection is sent to {service}, which bills each image at the price shown. The result arrives as a new layer with the selection as its mask.	Der Bereich um die Auswahl wird an {service} gesendet; jedes Bild kostet den angezeigten Preis. Das Ergebnis kommt als neue Ebene mit der Auswahl als Maske.
+	No API key yet: enter it under AI › AI Settings…	Noch kein API-Schlüssel: unter KI › KI-Einstellungen… eintragen.
+	Online (Generative Fill)	Online (Generatives Füllen)
+	Service:	Dienst:
+	API key:	API-Schlüssel:
+	stored ({hint}) – type to replace	gespeichert ({hint}) – zum Ersetzen neu eingeben
+	not stored yet	noch nicht gespeichert
+	Default model:	Standardmodell:
+	The key is kept in the macOS keychain, not in PhotoCraft's settings.	Der Schlüssel liegt im macOS-Schlüsselbund, nicht in den PhotoCraft-Einstellungen.
+	On this Mac (free, offline)	Auf diesem Mac (kostenlos, offline)
+	Select Subject and Remove Background use the AI model	„Motiv auswählen“ und „Hintergrund entfernen“ nutzen das KI-Modell
+	loaded	geladen
+	loads on first use ({size})	wird beim ersten Gebrauch geladen ({size})
+	Load all now ({size})	Jetzt alle laden ({size})
+	Delete models	Modelle löschen

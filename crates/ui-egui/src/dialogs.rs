@@ -288,6 +288,9 @@ fn command_body(app: &mut PhotocraftApp, ui: &mut egui::Ui, d: &Dialog, fields: 
         _ if crate::stroke_ui::owns(fields) => crate::stroke_ui::body(ui, fields),
         _ if crate::new_group_ui::owns(fields) => crate::new_group_ui::body(ui, fields),
         _ if crate::snapshot_dialog::owns(fields) => crate::snapshot_dialog::body(ui, fields),
+        // Fork patch (76344243/photocraft): the AI menu's dialogs.
+        #[cfg(not(target_arch = "wasm32"))]
+        _ if crate::ki_ui::owns(fields) => crate::ki_ui::body(app, ui, fields),
         _ if crate::channel_options_ui::owns(fields) => crate::channel_options_ui::body(ui, fields),
         _ if crate::channel_options_ui::owns_new_spot(fields) => crate::channel_options_ui::new_spot_body(ui, fields),
         _ if crate::shape_dialog::owns(fields) => crate::shape_dialog::body(app, ui, fields),
@@ -528,6 +531,8 @@ fn ok_label(d: &Dialog) -> &'static str {
         tl!("Replace")
     } else if d.fields.contains_key("__export") {
         tl!("Export")
+    } else if d.fields.contains_key("__kiFill") {
+        tl!("Generate")
     } else {
         crate::file_ui::ok_label(&d.fields).unwrap_or(tl!("OK"))
     }
@@ -835,6 +840,8 @@ type Fields = serde_json::Map<String, Value>;
 /// The markers [`confirm`] and [`cancel`] choose a dialog's handler by: keys the code opening a
 /// dialog puts in its fields. Keep in step with the arms of `confirm`.
 const ROUTES: &[fn(&Fields) -> bool] = &[
+    #[cfg(not(target_arch = "wasm32"))]
+    crate::ki_ui::owns,
     crate::guide_layout_ui::owns,
     crate::brush_preset_dialog::owns,
     crate::fill_ui::owns,
@@ -997,6 +1004,8 @@ fn confirm_command(app: &mut PhotocraftApp, d: Dialog) -> Result<Value, String> 
         _ if crate::stroke_ui::owns(&d.fields) => crate::stroke_ui::confirm(app, &d.fields),
         _ if crate::new_group_ui::owns(&d.fields) => crate::new_group_ui::confirm(app, &d.fields),
         _ if crate::snapshot_dialog::owns(&d.fields) => crate::snapshot_dialog::confirm(app, &d.fields),
+        #[cfg(not(target_arch = "wasm32"))]
+        _ if crate::ki_ui::owns(&d.fields) => crate::ki_ui::confirm(app, &d.fields),
         _ if crate::channel_options_ui::owns(&d.fields) => crate::channel_options_ui::confirm(app, &d.fields),
         _ if crate::channel_options_ui::owns_new_spot(&d.fields) => crate::channel_options_ui::confirm_new_spot(app, &d.fields),
         _ if crate::shape_dialog::owns(&d.fields) => crate::shape_dialog::confirm(app, &d.fields),
@@ -1171,6 +1180,8 @@ pub(crate) mod shape_fill_ui;
 pub(super) mod sizing;
 pub mod smart_filter_dialog;
 pub mod snapshot_dialog;
+#[cfg(not(target_arch = "wasm32"))]
+pub mod ki_ui;
 pub(crate) mod solid_fill_ui;
 pub mod stack_dialog;
 pub mod stroke_ui;

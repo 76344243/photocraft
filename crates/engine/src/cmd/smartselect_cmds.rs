@@ -88,6 +88,11 @@ fn apply(s: &mut Session, label: &str, region: Option<&Region>, m: SelectionMode
     Ok(json!({ "selected": selected, "changed": true, "bounds": bbox.map(|r| [r.x0, r.y0, r.width() as i32, r.height() as i32]) }))
 }
 
+/// Fork patch (76344243/photocraft): [`apply`] for the AI menu's Select Subject.
+pub(crate) fn apply_region(s: &mut Session, label: &str, region: Option<&Region>, m: SelectionMode) -> Result<Value> {
+    apply(s, label, region, m)
+}
+
 fn points(p: &Value) -> Vec<(f32, f32)> {
     p.get("points")
         .and_then(Value::as_array)
@@ -303,6 +308,11 @@ impl SubjectCache {
 }
 
 fn select_subject(s: &mut Session, p: &Value) -> Result<Value> {
+    // Fork patch (76344243/photocraft): the local AI model once it is downloaded.
+    #[cfg(not(target_arch = "wasm32"))]
+    if crate::ki_cmds::subject_ai_ready(p) {
+        return crate::ki_cmds::select_subject(s, p);
+    }
     // The selected layer's pixels; the composite only when no pixel layer is selected.
     let all_layers = b(p, "sampleAllLayers", false);
     let d = s.active().ok_or(EngineError::NoDocument)?;

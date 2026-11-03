@@ -176,6 +176,8 @@ pub(crate) use dialogs::shape_fill_ui;
 use dialogs::sizing;
 pub use dialogs::smart_filter_dialog;
 pub use dialogs::snapshot_dialog;
+#[cfg(not(target_arch = "wasm32"))]
+pub use dialogs::ki_ui;
 pub(crate) use dialogs::solid_fill_ui;
 pub use dialogs::stack_dialog;
 pub use dialogs::stroke_ui;
