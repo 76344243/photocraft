@@ -251,15 +251,16 @@ fn short(v: &Value) -> String {
 }
 
 /// Output size for OpenAI-style models: the picture's aspect, multiples of 16, within the
-/// service's limits (655,360 … 8,294,400 pixels, long side ≤ `max`).
-pub fn openai_size(w: usize, h: usize, max: u32) -> (u32, u32) {
+/// service's limits (at least `min_px` pixels – GPT Image 655,360, Seedream 921,600 – up to
+/// 8,294,400, long side ≤ `max`).
+pub fn openai_size(w: usize, h: usize, max: u32, min_px: f64) -> (u32, u32) {
     let aspect = (w.max(1) as f64 / h.max(1) as f64).clamp(1.0 / 3.0, 3.0);
     let long = (w.max(h) as f64).clamp(1024.0, max as f64);
     let (mut ow, mut oh) = if aspect >= 1.0 { (long, long / aspect) } else { (long * aspect, long) };
-    // At least 655,360 pixels.
+    // At least `min_px` pixels (rounding to 16 below may take a little: aim 1 % higher).
     let px = ow * oh;
-    if px < 655_360.0 {
-        let s = (655_360.0 / px).sqrt();
+    if px < min_px * 1.01 {
+        let s = (min_px * 1.01 / px).sqrt();
         ow *= s;
         oh *= s;
     }
@@ -379,7 +380,7 @@ pub fn edit(service: &Service, req: &Request<'_>, p: &Progress<'_>) -> Result<(V
             gemini_image(&v)?
         }
         Protocol::OpenAiEdit => {
-            let (ow, oh) = openai_size(req.w, req.h, model.max_side);
+            let (ow, oh) = openai_size(req.w, req.h, model.max_side, 655_360.0);
             let mut form = Multipart::new();
             form.text("model", req.model);
             form.text("prompt", &text);
@@ -395,7 +396,7 @@ pub fn edit(service: &Service, req: &Request<'_>, p: &Progress<'_>) -> Result<(V
             openai_image(&v)?
         }
         Protocol::Seedream => {
-            let (ow, oh) = openai_size(req.w, req.h, model.max_side);
+            let (ow, oh) = openai_size(req.w, req.h, model.max_side, 921_600.0);
             let mut images = vec![json!(format!("data:image/png;base64,{}", b64(&original)))];
             if let Some(m) = &marked {
                 images.push(json!(format!("data:image/png;base64,{}", b64(m))));
@@ -426,11 +427,11 @@ mod tests {
         assert_eq!(nearest_ratio(1000, 1000), (1, 1));
         assert_eq!(nearest_ratio(1920, 1080), (16, 9));
         assert_eq!(nearest_ratio(600, 800), (3, 4));
-        for (w, h) in [(300, 200), (4000, 3000), (500, 3000), (1024, 1024)] {
-            let (ow, oh) = openai_size(w, h, 2048);
+        for (w, h) in [(300, 200), (4000, 3000), (500, 3000), (1024, 1024), (1184, 864)] {
+            let (ow, oh) = openai_size(w, h, 2048, 921_600.0);
             assert!(ow % 16 == 0 && oh % 16 == 0);
             let px = ow as u64 * oh as u64;
-            assert!((655_360..=8_294_400).contains(&px), "{w}×{h} → {ow}×{oh}");
+            assert!((921_600..=8_294_400).contains(&px), "{w}×{h} → {ow}×{oh}");
             assert!(ow.max(oh) <= 3840 && (ow.max(oh) as f64 / ow.min(oh) as f64) <= 3.01);
         }
     }

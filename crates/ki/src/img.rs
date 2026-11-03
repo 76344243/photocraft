@@ -111,9 +111,9 @@ pub fn dilate(mask: &[f32], w: usize, h: usize, r: usize) -> Vec<f32> {
     let mut rows = vec![0.0f32; w * h];
     rows.par_chunks_mut(w).enumerate().for_each(|(y, out)| {
         let src = &mask[y * w..(y + 1) * w];
-        for x in 0..w {
+        for (x, o) in out.iter_mut().enumerate() {
             let (a, b) = (x.saturating_sub(r), (x + r + 1).min(w));
-            out[x] = if src[a..b].iter().any(|v| *v > 0.0) { 1.0 } else { 0.0 };
+            *o = if src[a..b].iter().any(|v| *v > 0.0) { 1.0 } else { 0.0 };
         }
     });
     let mut out = vec![0.0f32; w * h];
@@ -136,9 +136,9 @@ pub fn blur(mask: &[f32], w: usize, h: usize, r: usize) -> Vec<f32> {
         if horizontal {
             out.par_chunks_mut(w).enumerate().for_each(|(y, o)| {
                 let s = &src[y * w..(y + 1) * w];
-                for x in 0..w {
+                for (x, v) in o.iter_mut().enumerate() {
                     let (a, b) = (x.saturating_sub(r), (x + r + 1).min(w));
-                    o[x] = s[a..b].iter().sum::<f32>() / (b - a) as f32;
+                    *v = s[a..b].iter().sum::<f32>() / (b - a) as f32;
                 }
             });
         } else {
@@ -228,7 +228,7 @@ mod tests {
         assert_eq!(mask_bounds(&d, w, h, 0.5), Some(Rect { x: 5, y: 3, w: 5, h: 5 }));
         let b = blur(&d, w, h, 1);
         assert!(b[5 * w + 7] > 0.5 && b[5 * w + 2] == 0.0 && b[5 * w + 3] > 0.0, "{:?}", &b[5 * w..6 * w]);
-        assert_eq!(mask_bounds(&vec![0.0; 4], 2, 2, 0.0), None);
+        assert_eq!(mask_bounds(&[0.0; 4], 2, 2, 0.0), None);
     }
 
     #[test]

@@ -3566,7 +3566,7 @@ smartSvg	AI/PDF/EPS contents will be edited as SVG. Saving replaces the embedded
 	Nothing is selected, so the whole picture is changed. Describe the change.	Nichts ist ausgewählt – das ganze Bild wird verändert. Beschreibe die Änderung.
 	e.g. a small wooden boat on the water	z. B. ein kleines Holzboot auf dem Wasser
 	The area around the selection is sent to {service}, which bills each image at the price shown. The result arrives as a new layer with the selection as its mask.	Der Bereich um die Auswahl wird an {service} gesendet; jedes Bild kostet den angezeigten Preis. Das Ergebnis kommt als neue Ebene mit der Auswahl als Maske.
-	No API key yet: enter it under AI › AI Settings…	Noch kein API-Schlüssel: unter KI › KI-Einstellungen… eintragen.
+	No API key yet: enter it under AI › AI Settings…	Noch kein API-Schlüssel – bitte eintragen unter KI › KI-Einstellungen…
 	Online (Generative Fill)	Online (Generatives Füllen)
 	Service:	Dienst:
 	API key:	API-Schlüssel:
