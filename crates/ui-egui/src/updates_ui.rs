@@ -36,6 +36,14 @@ fn release_of(found: &photocraft_engine::updates_cmds::Release) -> craft_update:
     }
 }
 
+impl PhotocraftApp {
+    /// Fork patch (76344243/photocraft): no check at start, since the ArtCraft-Updater installs
+    /// this fork's releases. Help › Check for updates still works.
+    pub fn skip_startup_update_check(&mut self) {
+        self.updates_rt.startup_checked = true;
+    }
+}
+
 pub(crate) fn check(app: &mut PhotocraftApp, _ctx: &egui::Context, params: Value) -> Result<Value, String> {
     let before = app.session.updates.status.clone();
     let result = app.run("help.checkForUpdates", params);
